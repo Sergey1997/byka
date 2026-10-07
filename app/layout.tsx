@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
-import { Source_Serif_4, Unbounded } from "next/font/google";
+import localFont from "next/font/local";
 import { BookProvider } from "@/components/book";
-import { Footer, } from "@/components/frame";
+import { Footer } from "@/components/frame";
 import { Header } from "@/components/header";
 import { studio } from "@/lib/content";
 import "./globals.css";
 
-const display = Unbounded({
-  subsets: ["cyrillic", "latin"],
-  weight: ["500", "700"],
+const display = localFont({
+  src: "./fonts/Unbounded.ttf",
+  weight: "500 700",
   variable: "--font-display",
+  display: "swap",
 });
 
-const serif = Source_Serif_4({
-  subsets: ["cyrillic", "latin"],
-  weight: ["400", "600"],
-  style: ["normal", "italic"],
+const serif = localFont({
+  src: [
+    { path: "./fonts/SourceSerif4.ttf", weight: "400 600", style: "normal" },
+    { path: "./fonts/SourceSerif4-Italic.ttf", weight: "400 600", style: "italic" },
+  ],
   variable: "--font-serif",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
