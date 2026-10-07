@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { live } from "@/lib/site";
 import { BookButton } from "./book";
+import { Photo } from "./photo";
 import { useSite } from "./site";
 
 export function Footer() {
@@ -15,7 +16,7 @@ export function Footer() {
     <footer className="foot">
       <div className="wrap foot-grid">
         <div>
-          <img src={site.studio.logo} alt="BYKA" width={56} height={56} />
+          <Photo src={site.studio.logo} alt="BYKA" width={56} height={56} sizes="56px" />
           {site.studio.line ? <p>{site.studio.line}</p> : null}
         </div>
         <ul>

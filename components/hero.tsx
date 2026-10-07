@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { live } from "@/lib/site";
 import { BookButton } from "./book";
+import { Photo } from "./photo";
 import { useSite } from "./site";
 
 const interval = 6000;
@@ -24,11 +25,14 @@ export function Hero() {
   return (
     <section className="hero">
       {slides.map((location, index) => (
-        <img
+        <Photo
           key={location.id}
           className={index === current ? "hero-slide on" : "hero-slide"}
           src={location.photo}
           alt={location.name}
+          fill
+          sizes="100vw"
+          priority={index === 0}
         />
       ))}
       <div className="hero-copy wrap">

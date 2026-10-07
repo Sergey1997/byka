@@ -3,6 +3,7 @@ import { BookButton } from "@/components/book";
 import { ContactsBlock } from "@/components/contacts-block";
 import { Points, PriceCards, SectionTitle } from "@/components/frame";
 import { Hero } from "@/components/hero";
+import { Photo } from "@/components/photo";
 import { ProjectGrid } from "@/components/project-grid";
 import { live } from "@/lib/site";
 import { getSite } from "@/lib/site-store";
@@ -26,7 +27,9 @@ export default async function HomePage() {
                 className="room"
                 draft={{ kind: "booking", location: location.id, topic: location.name }}
               >
-                {location.photo ? <img src={location.photo} alt="" /> : null}
+                {location.photo ? (
+                  <Photo src={location.photo} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" />
+                ) : null}
                 <span className="room-name">
                   {location.name}
                   <span aria-hidden="true">›</span>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { live } from "@/lib/site";
+import { Photo } from "./photo";
 import { useSite } from "./site";
 
 export function Header() {
@@ -15,7 +16,7 @@ export function Header() {
   return (
     <header className="topbar">
       <Link href="/" className="brand" onClick={() => setOpen(false)}>
-        <img src={site.studio.logo} alt="BYKA" width={44} height={44} />
+        <Photo src={site.studio.logo} alt="BYKA" width={44} height={44} sizes="44px" priority />
       </Link>
       <nav className={open ? "site-nav open" : "site-nav"}>
         {live(site.nav)

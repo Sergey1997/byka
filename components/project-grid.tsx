@@ -28,6 +28,7 @@ export function ProjectGrid({
                   alt=""
                   fill
                   sizes="(max-width: 900px) 100vw, 33vw"
+                  quality={70}
                 />
                 <span className="play" aria-hidden="true" />
               </button>
