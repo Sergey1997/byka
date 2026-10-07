@@ -45,6 +45,8 @@ export type Site = {
     altcoin: string;
     hours: string;
     logo: string;
+    phone: string;
+    email: string;
   };
   nav: { href: string; label: string; on: boolean }[];
   locations: {
@@ -132,7 +134,7 @@ export function defaultSite(): Site {
         text: "Подсвеченные слоты ещё не закрыты. Нажатие не бронирует кабинет — открывает заявку, её подтверждаем в Telegram.",
       },
     },
-    studio: { ...studio, logo: "/logo.jpg" },
+    studio: { ...studio, logo: "/logo.jpg", phone: "", email: "" },
     nav: nav.map((item) => ({ ...item, on: true })),
     locations: locations.map((item) => ({
       id: item.id,

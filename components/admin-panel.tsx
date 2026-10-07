@@ -130,9 +130,6 @@ export function AdminPanel({ initial }: { initial: Site }) {
         <Field label="Текст проектов" value={site.home.projects.lede} onChange={(lede) => patch({ ...site, home: { ...site.home, projects: { ...site.home.projects, lede } } })} />
         <Toggle label="О студии на главной" value={site.home.about.on} onChange={(on) => patch({ ...site, home: { ...site.home, about: { ...site.home.about, on } } })} />
         <Field label="Заголовок о студии" value={site.home.about.title} onChange={(title) => patch({ ...site, home: { ...site.home, about: { ...site.home.about, title } } })} />
-        <Toggle label="Календарь" value={site.home.calendar.on} onChange={(on) => patch({ ...site, home: { ...site.home, calendar: { ...site.home.calendar, on } } })} />
-        <Field label="Заголовок календаря" value={site.home.calendar.title} onChange={(title) => patch({ ...site, home: { ...site.home, calendar: { ...site.home.calendar, title } } })} />
-        <Field label="Текст календаря" value={site.home.calendar.text} multiline onChange={(text) => patch({ ...site, home: { ...site.home, calendar: { ...site.home.calendar, text } } })} />
       </details>
 
       <details className="admin-block">
@@ -211,6 +208,8 @@ export function AdminPanel({ initial }: { initial: Site }) {
             ["address", "Адрес"],
             ["room", "Кабинет"],
             ["district", "Район"],
+            ["phone", "Телефон"],
+            ["email", "Почта"],
             ["telegram", "Telegram URL"],
             ["telegramHandle", "Telegram"],
             ["instagram", "Instagram"],

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Availability } from "@/components/availability";
 import { BookButton } from "@/components/book";
+import { ContactsBlock } from "@/components/contacts-block";
 import { Points, PriceCards, SectionTitle } from "@/components/frame";
 import { Hero } from "@/components/hero";
 import { ProjectGrid } from "@/components/project-grid";
@@ -62,9 +62,9 @@ export default async function HomePage() {
           <Points items={about} />
         </section>
       ) : null}
-      {site.home.calendar.on ? (
+      {site.pages.contacts.on ? (
         <section className="section wrap">
-          <Availability />
+          <ContactsBlock studio={site.studio} title={site.pages.contacts.title} />
         </section>
       ) : null}
     </main>
