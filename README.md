@@ -5,8 +5,9 @@
 ## Локально
 
 ```bash
-npm install
-npm run dev
+corepack enable
+pnpm install
+pnpm dev
 ```
 
 Сайт откроется на [http://localhost:3000](http://localhost:3000).
@@ -22,6 +23,6 @@ SQL лежит в `supabase/migrations/20261007133000_leads.sql`. Таблицы
 ## Проверка
 
 ```bash
-npm test
-npm run build
+pnpm test
+pnpm build
 ```
