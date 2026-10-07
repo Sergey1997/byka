@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Availability } from "@/components/availability";
 import { BookButton } from "@/components/book";
-import { SetPlan } from "@/components/set-plan";
 import { Showreel } from "@/components/showreel";
 import { locations, prices, projects, studio } from "@/lib/content";
 
@@ -47,7 +46,14 @@ export default function HomePage() {
             </dl>
           </div>
           <aside className="hero-mark">
-            <Image src="/logo.jpg" alt="Знак BYKA: чёрный бык на жёлтом поле" width={320} height={320} priority />
+            <Image
+              src="/logo.jpg"
+              alt="Знак BYKA: чёрный бык на жёлтом поле"
+              width={640}
+              height={640}
+              priority
+              className="hero-logo"
+            />
             <p>
               От {prices.from} / {prices.unit}. Канал {studio.line.toLowerCase()}.
             </p>
@@ -66,13 +72,14 @@ export default function HomePage() {
               <p className="index">Локация {location.index}</p>
               <h2>{location.name}</h2>
               <p className="lede">{location.text}</p>
-              <div className="set-meta">
-                <span>{location.guests}</span>
-                <span>{location.cameras}</span>
-              </div>
+              <p className="set-spec">
+                {location.guests}
+                <span aria-hidden="true">·</span>
+                {location.cameras}
+              </p>
               <div className="hero-actions">
                 <BookButton
-                  className="btn btn-black"
+                  className="btn btn-solid"
                   draft={{ kind: "booking", location: location.id, topic: location.name }}
                 >
                   Этот сетап
@@ -80,7 +87,13 @@ export default function HomePage() {
               </div>
             </div>
             <div className="set-visual">
-              <SetPlan id={location.id} />
+              <Image
+                src={`/sets/${location.id}.jpg`}
+                alt={`Сетап «${location.name}»`}
+                width={1200}
+                height={900}
+                className="set-photo"
+              />
             </div>
           </article>
         ))}
