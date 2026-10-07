@@ -6,19 +6,10 @@ import { Header } from "@/components/header";
 import { studio } from "@/lib/content";
 import "./globals.css";
 
-const display = localFont({
-  src: "./fonts/Unbounded.ttf",
-  weight: "500 700",
-  variable: "--font-display",
-  display: "swap",
-});
-
-const serif = localFont({
-  src: [
-    { path: "./fonts/SourceSerif4.ttf", weight: "400 600", style: "normal" },
-    { path: "./fonts/SourceSerif4-Italic.ttf", weight: "400 600", style: "italic" },
-  ],
-  variable: "--font-serif",
+const sans = localFont({
+  src: "./fonts/Montserrat.ttf",
+  weight: "100 900",
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -53,7 +44,7 @@ const schema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${display.variable} ${serif.variable}`}>
+    <html lang="ru" className={sans.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
         <BookProvider>

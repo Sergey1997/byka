@@ -11,11 +11,10 @@ const osm = `https://www.openstreetmap.org/?mlat=${studio.lat}&mlon=${studio.lon
 
 export default function ContactsPage() {
   return (
-    <main className="wrap" style={{ paddingBottom: "3rem" }}>
+    <main className="wrap page">
       <PageHead
-        index="06 · Контакты"
-        title="Кабинет 504"
-        lede={`${studio.city}, ${studio.address}. ${studio.district}. Центральный вход, пятый этаж.`}
+        title="Контакты"
+        lede={`${studio.city}, ${studio.address}, ${studio.room}. ${studio.district}. Центральный вход, пятый этаж.`}
       />
       <div className="contact-grid">
         <div>
@@ -23,7 +22,7 @@ export default function ContactsPage() {
             <iframe title="Карта: Чернышевского 10а" src={map} />
           </div>
           <p className="messengers">
-            <a className="btn btn-black" href={yandex}>
+            <a className="btn" href={yandex}>
               Яндекс Карты
             </a>
             <a className="btn" href={osm}>
@@ -43,8 +42,8 @@ export default function ContactsPage() {
           <p className="fine">Телефон и WhatsApp не публикуем, пока нет отдельного номера студии. Ответ идёт в Telegram.</p>
         </div>
         <div>
-          <p className="index">Партнёрство и вопросы</p>
           <h2>Написать</h2>
+          <p className="fine">Партнёрство и вопросы</p>
           <LeadForm preset={{ kind: "partnership" }} />
           <div className="faq">
             {faq.map((item) => (

@@ -61,7 +61,7 @@ export function BookButton({
 }) {
   const { open } = useBook();
   return (
-    <button type="button" className={className ?? "btn btn-yellow"} onClick={() => open(draft)}>
+    <button type="button" className={className ?? "btn"} onClick={() => open(draft)}>
       {children}
     </button>
   );
@@ -208,26 +208,9 @@ export function LeadForm({ preset }: { preset: Draft }) {
         </p>
       ) : null}
       {done ? <p className="form-ok">{done}</p> : null}
-      <button className="btn btn-black" type="submit" disabled={pending}>
+      <button className="btn btn-solid" type="submit" disabled={pending}>
         {pending ? "Отправляем" : "Отправить заявку"}
       </button>
     </form>
   );
-}
-
-export function MinskClock() {
-  const [value, setValue] = useState("");
-  useEffect(() => {
-    const format = () =>
-      new Intl.DateTimeFormat("ru-BY", {
-        timeZone: "Europe/Minsk",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(new Date());
-    setValue(format());
-    const id = window.setInterval(() => setValue(format()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-  return <span className="clock">{value || "––:––:––"}</span>;
 }

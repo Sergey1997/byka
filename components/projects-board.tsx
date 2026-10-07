@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { genreLabel, projects, type ProjectGenre } from "@/lib/content";
 import { BookButton } from "./book";
+import { ProjectGrid } from "./project-grid";
 
 const filters: Array<ProjectGenre | "all"> = ["all", "business", "craft", "personal", "crypto"];
 
@@ -33,27 +33,7 @@ export function ProjectsBoard() {
           </BookButton>
         </div>
       ) : (
-        <div className="posters">
-          {visible.map((item) => (
-            <a
-              key={item.youtubeId}
-              className="poster"
-              href={`https://www.youtube.com/watch?v=${item.youtubeId}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Image
-                src={`https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`}
-                alt=""
-                width={480}
-                height={360}
-              />
-              <p className="index">{item.channel}</p>
-              <h2>{item.title}</h2>
-              <p>{genreLabel[item.genre]}</p>
-            </a>
-          ))}
-        </div>
+        <ProjectGrid items={visible} />
       )}
     </div>
   );

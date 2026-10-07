@@ -7,23 +7,20 @@ export const metadata: Metadata = { title: "Сотрудничество" };
 
 export default function CollabPage() {
   return (
-    <main className="wrap" style={{ paddingBottom: "3rem" }}>
+    <main className="wrap page">
       <PageHead
-        index="05 · Вместе"
-        title="Не только аренда часа"
-        lede="Пять форматов. Заявка падает в тот же Telegram, что и бронь студии."
+        title="Сотрудничество"
+        lede="Не только аренда часа. Пять форматов, заявка падает в тот же Telegram, что и бронь студии."
       />
       <div className="deals">
         {collab.map((item) => (
           <article className="deal" key={item.kind}>
-            <p className="index">{item.index}</p>
+            <span>{item.index}.</span>
             <div>
               <h2>{item.title}</h2>
               <p>{item.text}</p>
             </div>
-            <BookButton className="btn btn-black" draft={{ kind: item.kind, topic: item.title }}>
-              Обсудить
-            </BookButton>
+            <BookButton draft={{ kind: item.kind, topic: item.title }}>Обсудить</BookButton>
           </article>
         ))}
       </div>

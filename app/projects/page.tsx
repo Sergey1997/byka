@@ -6,12 +6,8 @@ export const metadata: Metadata = { title: "Проекты" };
 
 export default function ProjectsPage() {
   return (
-    <main className="wrap" style={{ paddingBottom: "3rem" }}>
-      <PageHead
-        index="04 · Проекты"
-        title="Что уже снято"
-        lede="Выпуски BYKA и ALTCOIN BUY. Обложки ведут на YouTube, не на макет."
-      />
+    <main className="wrap page">
+      <PageHead title="Проекты" lede="Выпуски BYKA и ALTCOIN BUY. Нажмите на обложку — видео откроется прямо здесь." />
       <ProjectsBoard />
     </main>
   );
