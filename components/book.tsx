@@ -1,14 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
-import {
-  leadKindLabel,
-  locations,
-  slotTimes,
-  studio,
-  type LeadKind,
-  type LocationId,
-} from "@/lib/content";
+import { leadKindLabel, slotTimes, type LeadKind, type LocationId } from "@/lib/content";
+import { live } from "@/lib/site";
+import { useSite } from "./site";
 
 export type Draft = {
   kind?: LeadKind;
@@ -97,6 +92,8 @@ function BookDialog() {
 }
 
 export function LeadForm({ preset }: { preset: Draft }) {
+  const site = useSite();
+  const rooms = live(site.locations);
   const baseId = useId();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -169,9 +166,9 @@ export function LeadForm({ preset }: { preset: Draft }) {
           Локация
           <select name="location" defaultValue={preset.location ?? ""}>
             <option value="">Не выбрана</option>
-            {locations.map((item) => (
+            {rooms.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.index} {item.name}
+                {item.name}
               </option>
             ))}
           </select>
@@ -204,7 +201,7 @@ export function LeadForm({ preset }: { preset: Draft }) {
       {error ? (
         <p className="form-error" role="alert">
           {error}{" "}
-          <a href={studio.telegram}>Написать {studio.telegramHandle}</a>
+          <a href={site.studio.telegram}>Написать {site.studio.telegramHandle}</a>
         </p>
       ) : null}
       {done ? <p className="form-ok">{done}</p> : null}

@@ -1,55 +1,72 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Availability } from "@/components/availability";
 import { BookButton } from "@/components/book";
-import { PriceCards, Points, SectionTitle } from "@/components/frame";
+import { Points, PriceCards, SectionTitle } from "@/components/frame";
 import { Hero } from "@/components/hero";
 import { ProjectGrid } from "@/components/project-grid";
-import { gear, locations, prices, projects } from "@/lib/content";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const site = await getSite();
+  const rooms = live(site.locations);
+  const films = live(site.projects);
+  const about = live(site.gear);
+
   return (
     <main>
-      <Hero />
-      <section className="section wrap" id="locations">
-        <SectionTitle title="Интерьер" lede="Три локации в одном кабинете. При бронировании выберите сетап и сколько людей в кадре." />
-        <div className="rooms">
-          {locations.map((location) => (
-            <BookButton
-              key={location.id}
-              className="room"
-              draft={{ kind: "booking", location: location.id, topic: location.name }}
-            >
-              <Image src={`/rooms/${location.id}.jpg`} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" />
-              <span className="room-name">
-                {location.name}
-                <span aria-hidden="true">›</span>
-              </span>
-              <span className="room-spec">
-                {location.guests} · {location.cameras}
-              </span>
-            </BookButton>
-          ))}
-        </div>
-      </section>
-      <section className="section wrap">
-        <SectionTitle title="Услуги и стоимость" lede={`От ${prices.from} за ${prices.unit}.`} />
-        <PriceCards rows={prices.groups[0].rows} />
-        <p className="more">
-          <Link href="/prices">Весь прайс</Link>
-        </p>
-      </section>
-      <section className="section wrap">
-        <SectionTitle title="Проекты" lede="Выпуски, которые сняты в студии." />
-        <ProjectGrid items={projects} />
-      </section>
-      <section className="section wrap">
-        <SectionTitle title="О студии" />
-        <Points items={gear} />
-      </section>
-      <section className="section wrap">
-        <Availability />
-      </section>
+      {site.home.hero.on ? <Hero /> : null}
+      {site.home.rooms.on && rooms.length > 0 ? (
+        <section className="section wrap" id="locations">
+          <SectionTitle title={site.home.rooms.title} lede={site.home.rooms.lede} />
+          <div className="rooms">
+            {rooms.map((location) => (
+              <BookButton
+                key={location.id}
+                className="room"
+                draft={{ kind: "booking", location: location.id, topic: location.name }}
+              >
+                {location.photo ? <img src={location.photo} alt="" /> : null}
+                <span className="room-name">
+                  {location.name}
+                  <span aria-hidden="true">›</span>
+                </span>
+                <span className="room-spec">
+                  {[location.guests, location.cameras].filter(Boolean).join(" · ")}
+                </span>
+              </BookButton>
+            ))}
+          </div>
+        </section>
+      ) : null}
+      {site.home.prices.on ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.prices.title} lede={site.home.prices.lede} />
+          <PriceCards rows={site.prices.groups[0]?.rows ?? []} />
+          {site.pages.prices.on ? (
+            <p className="more">
+              <Link href="/prices">Весь прайс</Link>
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+      {site.home.projects.on && films.length > 0 ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.projects.title} lede={site.home.projects.lede} />
+          <ProjectGrid items={films} />
+        </section>
+      ) : null}
+      {site.home.about.on && about.length > 0 ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.about.title} />
+          <Points items={about} />
+        </section>
+      ) : null}
+      {site.home.calendar.on ? (
+        <section className="section wrap">
+          <Availability />
+        </section>
+      ) : null}
     </main>
   );
 }

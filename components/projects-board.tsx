@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { genreLabel, projects, type ProjectGenre } from "@/lib/content";
+import { genreLabel, type ProjectGenre } from "@/lib/content";
+import { live } from "@/lib/site";
 import { BookButton } from "./book";
 import { ProjectGrid } from "./project-grid";
+import { useSite } from "./site";
 
 const filters: Array<ProjectGenre | "all"> = ["all", "business", "craft", "personal", "crypto"];
 
 export function ProjectsBoard() {
+  const site = useSite();
   const [filter, setFilter] = useState<ProjectGenre | "all">("all");
-  const visible = projects.filter((item) => filter === "all" || item.genre === filter);
+  const visible = live(site.projects).filter((item) => filter === "all" || item.genre === filter);
 
   return (
     <div>
@@ -27,10 +30,8 @@ export function ProjectsBoard() {
       </div>
       {visible.length === 0 ? (
         <div className="empty-genre">
-          <p>В этой полке пока пусто. Творческие выпуски снимем — появятся здесь, а не на стоковой картинке.</p>
-          <BookButton draft={{ kind: "guest", topic: "Подкаст творчества" }}>
-            Предложить выпуск
-          </BookButton>
+          <p>В этой полке пока пусто.</p>
+          <BookButton draft={{ kind: "guest", topic: "Подкаст творчества" }}>Предложить выпуск</BookButton>
         </div>
       ) : (
         <ProjectGrid items={visible} />

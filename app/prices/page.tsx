@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHead, PriceCards, SectionTitle } from "@/components/frame";
-import { prices } from "@/lib/content";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "Стоимость" };
 
-export default function PricesPage() {
+export default async function PricesPage() {
+  const site = await getSite();
+  if (!site.pages.prices.on) notFound();
+
   return (
     <main className="wrap page">
-      <PageHead
-        title="Стоимость"
-        lede={`От ${prices.from} за ${prices.unit}. В час записи уже входят локация, камеры Sony FX30, RODE PodMic и свет Amaran. Монтаж и выезд считаются отдельно.`}
-      />
-      {prices.groups.map((group) => (
+      <PageHead title={site.pages.prices.title} lede={site.pages.prices.lede} />
+      {site.prices.groups.map((group) => (
         <section className="section" key={group.title}>
           <SectionTitle title={group.title} />
           <PriceCards rows={group.rows} />
         </section>
       ))}
-      <p className="fine center">
-        Цены в белорусских рублях. Если смена длиннее часа или гостей больше четырёх — напишите, посчитаем до съёмки, а не после.
-      </p>
+      {site.pages.prices.note ? <p className="fine center">{site.pages.prices.note}</p> : null}
     </main>
   );
 }

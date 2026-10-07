@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHead } from "@/components/frame";
 import { ProjectsBoard } from "@/components/projects-board";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "Проекты" };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const site = await getSite();
+  if (!site.pages.projects.on) notFound();
+
   return (
     <main className="wrap page">
-      <PageHead title="Проекты" lede="Выпуски BYKA и ALTCOIN BUY. Нажмите на обложку — видео откроется прямо здесь." />
+      <PageHead title={site.pages.projects.title} lede={site.pages.projects.lede} />
       <ProjectsBoard />
     </main>
   );

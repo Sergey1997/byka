@@ -6,3 +6,6 @@ out
 .env.local
 *.log
 .DS_Store
+data/site.json
+public/uploads/*
+!public/uploads/.gitkeep

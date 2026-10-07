@@ -1,24 +1,26 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHead, Points, SectionTitle } from "@/components/frame";
-import { comfort, gear } from "@/lib/content";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "О студии" };
 
-export default function StudioPage() {
+export default async function StudioPage() {
+  const site = await getSite();
+  if (!site.pages.studio.on) notFound();
+
   return (
     <main className="wrap page">
-      <PageHead
-        title="О студии"
-        lede="Чернышевского 10а, кабинет 504. Комната заглушена, между дублями есть где сесть, чай уже стоит."
-      />
+      <PageHead title={site.pages.studio.title} lede={site.pages.studio.lede} />
       <section className="section">
-        <Points items={gear} />
+        <Points items={live(site.gear)} />
       </section>
       <section className="section">
-        <SectionTitle title="Между дублями" />
+        <SectionTitle title={site.pages.studio.comfortTitle} />
         <ul className="comfort">
-          {comfort.map((item) => (
-            <li key={item}>{item}</li>
+          {live(site.comfort).map((item) => (
+            <li key={item.text}>{item.text}</li>
           ))}
         </ul>
       </section>

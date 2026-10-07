@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import { BookProvider } from "@/components/book";
 import { Footer } from "@/components/frame";
 import { Header } from "@/components/header";
-import { studio } from "@/lib/content";
+import { SiteProvider } from "@/components/site";
+import { getSite } from "@/lib/site-store";
 import "./globals.css";
 
 const sans = localFont({
@@ -23,35 +24,38 @@ export const metadata: Metadata = {
   icons: { icon: "/logo.jpg" },
 };
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  name: "BYKA",
-  description: "Студия записи подкастов в Минске",
-  url: studio.youtube,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "ул. Чернышевского, 10а, каб. 504",
-    addressLocality: "Минск",
-    addressCountry: "BY",
-  },
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: studio.lat,
-    longitude: studio.lon,
-  },
-};
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const site = await getSite();
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: site.studio.name,
+    description: "Студия записи подкастов в Минске",
+    url: site.studio.youtube,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: `${site.studio.address}, ${site.studio.room}`,
+      addressLocality: site.studio.city,
+      addressCountry: "BY",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: site.studio.lat,
+      longitude: site.studio.lon,
+    },
+  };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className={sans.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-        <BookProvider>
-          <Header />
-          {children}
-          <Footer />
-        </BookProvider>
+        <SiteProvider site={site}>
+          <BookProvider>
+            <Header />
+            {children}
+            <Footer />
+          </BookProvider>
+        </SiteProvider>
       </body>
     </html>
   );

@@ -34,7 +34,6 @@ const kinds = new Set<LeadKind>([
   "partnership",
 ]);
 
-const locationIds = new Set(locations.map((item) => item.id));
 const times = new Set<string>(slotTimes);
 
 export function clean(value: unknown, max: number) {
@@ -63,7 +62,7 @@ export function parseLead(body: unknown): { lead: LeadInput } | { error: string 
   }
 
   const location = clean(raw.location, 32);
-  if (location && !locationIds.has(location as LocationId)) {
+  if (location && !/^[a-z0-9-]{1,32}$/.test(location)) {
     return { error: "Такой локации нет." };
   }
 
@@ -93,7 +92,7 @@ export function parseLead(body: unknown): { lead: LeadInput } | { error: string 
 }
 
 export function leadText(lead: LeadInput) {
-  const place = locations.find((item) => item.id === lead.location)?.name;
+  const place = locations.find((item) => item.id === lead.location)?.name || lead.location;
   const lines = [
     `BYKA · ${leadKindLabel[lead.kind]}`,
     `Имя: ${lead.name}`,

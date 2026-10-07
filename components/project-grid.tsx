@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import type { projects } from "@/lib/content";
-
-export function ProjectGrid({ items }: { items: typeof projects }) {
+export function ProjectGrid({
+  items,
+}: {
+  items: { youtubeId: string; title: string; channel: string }[];
+}) {
   const [playing, setPlaying] = useState("");
 
   return (

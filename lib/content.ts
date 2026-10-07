@@ -36,7 +36,7 @@ export const slotTimes = [
   "19:00",
 ] as const;
 
-export type LocationId = "razgovor" | "stol" | "noch";
+export type LocationId = string;
 
 export const locations: {
   id: LocationId;
