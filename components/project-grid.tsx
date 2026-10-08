@@ -5,7 +5,7 @@ import { useState } from "react";
 export function ProjectGrid({
   items,
 }: {
-  items: { youtubeId: string; title: string; channel: string }[];
+  items: { youtubeId: string; title: string; channel: string; photo?: string }[];
 }) {
   const [playing, setPlaying] = useState("");
 
@@ -24,7 +24,7 @@ export function ProjectGrid({
             ) : (
               <button type="button" onClick={() => setPlaying(item.youtubeId)} aria-label={`Смотреть: ${item.title}`}>
                 <Image
-                  src={`https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`}
+                  src={item.photo || `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`}
                   alt=""
                   fill
                   sizes="(max-width: 900px) 100vw, 33vw"

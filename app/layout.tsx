@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { BookProvider } from "@/components/book";
 import { Footer } from "@/components/frame";
 import { Header } from "@/components/header";
+import { Reveal } from "@/components/reveal";
 import { SiteProvider } from "@/components/site";
 import { getSite } from "@/lib/site-store";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Header />
             {children}
             <Footer />
+            <Reveal />
           </BookProvider>
         </SiteProvider>
       </body>

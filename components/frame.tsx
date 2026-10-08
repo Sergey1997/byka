@@ -40,12 +40,17 @@ export function Footer() {
   );
 }
 
-export function PageHead({ title, lede }: { title?: string; lede?: string }) {
-  if (!title && !lede) return null;
+export function PageHead({ title, lede, photo }: { title?: string; lede?: string; photo?: string }) {
+  if (!title && !lede && !photo) return null;
   return (
     <header className="page-head">
       {title ? <h1>{title}</h1> : null}
       {lede ? <p>{lede}</p> : null}
+      {photo ? (
+        <div className="page-cover">
+          <Photo src={photo} alt="" fill sizes="(max-width: 900px) 100vw, 1200px" />
+        </div>
+      ) : null}
     </header>
   );
 }
@@ -60,31 +65,45 @@ export function SectionTitle({ title, lede }: { title?: string; lede?: string })
   );
 }
 
-export function PriceCards({ rows }: { rows: { name: string; unit: string; price: string }[] }) {
+type PriceGroup = { title: string; rows: { name: string; unit: string; price: string }[] };
+
+export function PriceMenu({ groups }: { groups: PriceGroup[] }) {
   return (
-    <div className="price-cards">
-      {rows
-        .filter((row) => row.name || row.price)
-        .map((row) => (
-          <article className="price-card" key={`${row.name}-${row.price}`}>
-            {row.name ? <h3>{row.name}</h3> : null}
-            {row.price ? (
-              <p>
-                <strong>{row.price}</strong> BYN{row.unit ? ` / ${row.unit}` : ""}
-              </p>
-            ) : null}
-            <BookButton draft={{ kind: "booking", topic: row.name }}>Забронировать</BookButton>
-          </article>
-        ))}
+    <div className="price-menu">
+      {groups.map((group, g) => (
+        <div className="price-col" key={`${group.title}-${g}`}>
+          {group.title ? <h3>{group.title}</h3> : null}
+          <ul className="price-list">
+            {group.rows
+              .filter((row) => row.name || row.price)
+              .map((row, r) => (
+                <li key={`${row.name}-${r}`}>
+                  <BookButton className="price-item" draft={{ kind: "booking", topic: row.name }}>
+                    <span className="price-name">{row.name}</span>
+                    <span className="price-line">
+                      <span>{row.unit ? row.unit[0].toUpperCase() + row.unit.slice(1) : ""}</span>
+                      {row.price ? <strong>{row.price} BYN</strong> : null}
+                    </span>
+                  </BookButton>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }
 
-export function Points({ items }: { items: { title: string; text: string }[] }) {
+export function Points({ items }: { items: { title: string; text: string; photo?: string }[] }) {
   return (
     <ol className="points">
       {items.map((item, index) => (
         <li key={`${item.title}-${index}`}>
+          {item.photo ? (
+            <div className="point-photo">
+              <Photo src={item.photo} alt="" fill sizes="(max-width: 900px) 100vw, 34rem" />
+            </div>
+          ) : null}
           <span>{String(index + 1).padStart(2, "0")}.</span>
           {item.title ? <h3>{item.title}</h3> : null}
           {item.text ? <p>{item.text}</p> : null}

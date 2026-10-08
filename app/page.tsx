@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { BookButton } from "@/components/book";
 import { ContactsBlock } from "@/components/contacts-block";
-import { Points, PriceCards, SectionTitle } from "@/components/frame";
+import { Points, PriceMenu, SectionTitle } from "@/components/frame";
 import { Hero } from "@/components/hero";
 import { Photo } from "@/components/photo";
 import { ProjectGrid } from "@/components/project-grid";
@@ -45,12 +44,10 @@ export default async function HomePage() {
       {site.home.prices.on ? (
         <section className="section wrap">
           <SectionTitle title={site.home.prices.title} lede={site.home.prices.lede} />
-          <PriceCards rows={site.prices.groups[0]?.rows ?? []} />
-          {site.pages.prices.on ? (
-            <p className="more">
-              <Link href="/prices">Весь прайс</Link>
-            </p>
-          ) : null}
+          <PriceMenu groups={site.prices.groups} />
+          <p className="more">
+            <BookButton className="btn btn-solid">Забронировать</BookButton>
+          </p>
         </section>
       ) : null}
       {site.home.projects.on && films.length > 0 ? (

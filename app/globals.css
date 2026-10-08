@@ -175,6 +175,18 @@ main > .section:last-child { padding-bottom: 6rem; }
 .page { padding: 9rem 0 6rem; }
 .page-head { text-align: center; }
 .page-head h1 { font-size: clamp(2rem, 4vw, 3rem); }
+.page-cover, .point-photo, .deal-photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--panel);
+}
+.page-cover { aspect-ratio: 16 / 8; margin: 2.5rem 0 0; }
+.point-photo { aspect-ratio: 16 / 10; margin: 0 0 1.2rem; }
+.deal-photo { aspect-ratio: 16 / 9; margin: 0 0 1rem; }
+.page-cover img, .point-photo img, .deal-photo img {
+  object-fit: cover;
+}
 .fine { color: var(--muted); font-size: 0.85rem; }
 .center { text-align: center; margin-top: 3rem; }
 .index { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -220,22 +232,52 @@ main > .section:last-child { padding-bottom: 6rem; }
 .room-name span { margin-left: 0.5rem; color: var(--cyan); }
 .room-spec { bottom: 1.3rem; color: rgba(255, 255, 255, 0.75); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
 
-.price-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
-.price-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 2rem 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: var(--panel);
+.price-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 4rem; }
+.price-col h3 {
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid rgba(92, 225, 230, 0.25);
+  color: var(--text);
+  font-size: 1.5rem;
+  font-weight: 300;
   text-align: center;
 }
-.price-card h3 { min-height: 2.4em; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
-.price-card p { color: var(--muted); font-size: 0.85rem; }
-.price-card strong { display: block; color: var(--cyan); font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
-.price-card .btn { margin-top: auto; }
+.price-list { margin: 0; padding: 0; list-style: none; }
+.price-list li { border-bottom: 1px solid var(--line); }
+.price-item {
+  position: relative;
+  display: grid;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 1.9rem 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.price-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.price-item:hover::before { transform: scaleX(1); }
+.price-name {
+  color: var(--cyan);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.price-item:hover .price-name { transform: translateX(0.5rem); }
+.price-line { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; color: var(--muted); font-size: 0.85rem; }
+.price-line strong { flex: none; color: var(--cyan); font-weight: 500; }
 
 .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem 1.25rem; }
 .project-frame {
@@ -275,7 +317,7 @@ main > .section:last-child { padding-bottom: 6rem; }
 .project h3 { margin-top: 0.9rem; font-size: 0.95rem; font-weight: 600; }
 .project p { margin-top: 0.2rem; color: var(--cyan); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
 
-.points { display: grid; gap: 3.5rem; margin: 0; padding: 0; list-style: none; }
+.points { display: grid; gap: 3.5rem; margin: 0; padding: 0; list-style: none; overflow-x: clip; }
 .points li { max-width: 34rem; }
 .points li:nth-child(even) { margin-left: auto; text-align: right; }
 .points span { display: block; color: var(--cyan); font-size: 2.6rem; font-weight: 200; line-height: 1; }
@@ -454,7 +496,8 @@ main > .section:last-child { padding-bottom: 6rem; }
   }
   .site-nav.open { display: flex; }
   .hero-copy { bottom: 7rem; }
-  .rooms, .project-grid, .availability, .contact-split, .foot-grid { grid-template-columns: 1fr; }
+  .rooms, .project-grid, .availability, .contact-split, .foot-grid, .price-menu { grid-template-columns: 1fr; }
+  .price-col + .price-col { margin-top: 3.5rem; }
   .availability { padding: 1.5rem; gap: 1.5rem; }
   .points li:nth-child(even) { margin-left: 0; text-align: left; }
   .deal { grid-template-columns: 1fr; gap: 0.8rem; }
@@ -462,6 +505,26 @@ main > .section:last-child { padding-bottom: 6rem; }
   .deal .btn { justify-self: start; }
   .page { padding-top: 7rem; }
 }
+
+.reveal {
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  opacity: 0;
+  transition: opacity 1s var(--ease);
+}
+.reveal.is-in { opacity: 1; }
+.reveal :is(.rooms > *, .project-grid > *, .price-list > li, .deal) {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms + 150ms);
+}
+.reveal .points > li {
+  opacity: 0;
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  transition-delay: calc(var(--i, 0) * 250ms + 150ms);
+}
+.reveal .points > li:nth-child(odd) { transform: translateX(-80px); }
+.reveal .points > li:nth-child(even) { transform: translateX(80px); }
+.reveal.is-in :is(.rooms > *, .project-grid > *, .points > li, .price-list > li, .deal) { opacity: 1; transform: none; }
 
 .admin, .admin-gate {
   width: min(860px, calc(100% - 2rem));

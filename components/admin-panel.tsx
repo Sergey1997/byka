@@ -119,6 +119,11 @@ export function AdminPanel({ initial }: { initial: Site }) {
         <Field label="Заголовок героя" value={site.home.hero.title} multiline onChange={(title) => patch({ ...site, home: { ...site.home, hero: { ...site.home.hero, title } } })} />
         <Field label="Подзаголовок" value={site.home.hero.line} onChange={(line) => patch({ ...site, home: { ...site.home, hero: { ...site.home.hero, line } } })} />
         <Field label="Кнопка" value={site.home.hero.button} onChange={(button) => patch({ ...site, home: { ...site.home, hero: { ...site.home.hero, button } } })} />
+        <PhotoField
+          label="Фото героя"
+          value={site.home.hero.photo}
+          onChange={(photo) => patch({ ...site, home: { ...site.home, hero: { ...site.home.hero, photo } } })}
+        />
         <Toggle label="Интерьер" value={site.home.rooms.on} onChange={(on) => patch({ ...site, home: { ...site.home, rooms: { ...site.home.rooms, on } } })} />
         <Field label="Заголовок интерьера" value={site.home.rooms.title} onChange={(title) => patch({ ...site, home: { ...site.home, rooms: { ...site.home.rooms, title } } })} />
         <Field label="Текст интерьера" value={site.home.rooms.lede} multiline onChange={(lede) => patch({ ...site, home: { ...site.home, rooms: { ...site.home.rooms, lede } } })} />
@@ -157,6 +162,11 @@ export function AdminPanel({ initial }: { initial: Site }) {
               value={site.pages[page.key].lede}
               multiline
               onChange={(lede) => patch({ ...site, pages: { ...site.pages, [page.key]: { ...site.pages[page.key], lede } } })}
+            />
+            <PhotoField
+              label="Фото страницы"
+              value={site.pages[page.key].photo}
+              onChange={(photo) => patch({ ...site, pages: { ...site.pages, [page.key]: { ...site.pages[page.key], photo } } })}
             />
           </div>
         ))}
@@ -378,8 +388,9 @@ export function AdminPanel({ initial }: { initial: Site }) {
         title="Оборудование"
         items={site.gear}
         onChange={(gear) => patch({ ...site, gear })}
-        empty={{ title: "", text: "", on: true }}
+        empty={{ title: "", text: "", photo: "", on: true }}
         fields={["title", "text"]}
+        photo
       />
       <ListBlock
         title="Комфорт"
@@ -431,6 +442,11 @@ export function AdminPanel({ initial }: { initial: Site }) {
               value={item.channel}
               onChange={(channel) => patch({ ...site, projects: site.projects.map((row, i) => (i === index ? { ...row, channel } : row)) })}
             />
+            <PhotoField
+              label="Обложка"
+              value={item.photo}
+              onChange={(photo) => patch({ ...site, projects: site.projects.map((row, i) => (i === index ? { ...row, photo } : row)) })}
+            />
             <button className="text-btn" type="button" onClick={() => patch({ ...site, projects: site.projects.filter((_, i) => i !== index) })}>
               Удалить выпуск
             </button>
@@ -442,7 +458,7 @@ export function AdminPanel({ initial }: { initial: Site }) {
           onClick={() =>
             patch({
               ...site,
-              projects: [...site.projects, { youtubeId: "", title: "", genre: "business", channel: "BYKA", on: true }],
+              projects: [...site.projects, { youtubeId: "", title: "", genre: "business", channel: "BYKA", photo: "", on: true }],
             })
           }
         >
@@ -488,6 +504,11 @@ export function AdminPanel({ initial }: { initial: Site }) {
               multiline
               onChange={(text) => patch({ ...site, collab: site.collab.map((row, i) => (i === index ? { ...row, text } : row)) })}
             />
+            <PhotoField
+              label="Фото"
+              value={item.photo}
+              onChange={(photo) => patch({ ...site, collab: site.collab.map((row, i) => (i === index ? { ...row, photo } : row)) })}
+            />
             <button className="text-btn" type="button" onClick={() => patch({ ...site, collab: site.collab.filter((_, i) => i !== index) })}>
               Удалить
             </button>
@@ -496,7 +517,7 @@ export function AdminPanel({ initial }: { initial: Site }) {
         <button
           className="btn"
           type="button"
-          onClick={() => patch({ ...site, collab: [...site.collab, { kind: "ads", title: "", text: "", on: true }] })}
+          onClick={() => patch({ ...site, collab: [...site.collab, { kind: "ads", title: "", text: "", photo: "", on: true }] })}
         >
           Добавить формат
         </button>
@@ -593,18 +614,20 @@ function PhotoField({ label, value, onChange }: { label: string; value: string; 
   );
 }
 
-function ListBlock<T extends { on: boolean } & Record<string, string | boolean>>({
+function ListBlock<T extends { on: boolean; photo?: string } & Record<string, string | boolean>>({
   title,
   items,
   onChange,
   empty,
   fields,
+  photo,
 }: {
   title: string;
   items: T[];
   onChange: (items: T[]) => void;
   empty: T;
   fields: (keyof T & string)[];
+  photo?: boolean;
 }) {
   return (
     <details className="admin-block">
@@ -621,6 +644,13 @@ function ListBlock<T extends { on: boolean } & Record<string, string | boolean>>
               onChange={(value) => onChange(items.map((row, i) => (i === index ? { ...row, [field]: value } : row)))}
             />
           ))}
+          {photo ? (
+            <PhotoField
+              label="Фото"
+              value={String(item.photo ?? "")}
+              onChange={(value) => onChange(items.map((row, i) => (i === index ? { ...row, photo: value } : row)))}
+            />
+          ) : null}
           <button className="text-btn" type="button" onClick={() => onChange(items.filter((_, i) => i !== index))}>
             Удалить
           </button>

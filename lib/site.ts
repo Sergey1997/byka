@@ -15,14 +15,14 @@ import {
 
 export type Site = {
   pages: {
-    prices: { on: boolean; title: string; lede: string; note: string };
-    studio: { on: boolean; title: string; lede: string; comfortTitle: string };
-    projects: { on: boolean; title: string; lede: string };
-    collab: { on: boolean; title: string; lede: string };
-    contacts: { on: boolean; title: string; lede: string; writeTitle: string; writeLede: string; phoneNote: string };
+    prices: { on: boolean; title: string; lede: string; note: string; photo: string };
+    studio: { on: boolean; title: string; lede: string; comfortTitle: string; photo: string };
+    projects: { on: boolean; title: string; lede: string; photo: string };
+    collab: { on: boolean; title: string; lede: string; photo: string };
+    contacts: { on: boolean; title: string; lede: string; writeTitle: string; writeLede: string; phoneNote: string; photo: string };
   };
   home: {
-    hero: { on: boolean; title: string; line: string; button: string };
+    hero: { on: boolean; title: string; line: string; button: string; photo: string };
     rooms: { on: boolean; title: string; lede: string };
     prices: { on: boolean; title: string; lede: string };
     projects: { on: boolean; title: string; lede: string };
@@ -63,10 +63,10 @@ export type Site = {
     unit: string;
     groups: { title: string; rows: { name: string; unit: string; price: string }[] }[];
   };
-  gear: { title: string; text: string; on: boolean }[];
+  gear: { title: string; text: string; photo: string; on: boolean }[];
   comfort: { text: string; on: boolean }[];
-  projects: { youtubeId: string; title: string; genre: ProjectGenre; channel: string; on: boolean }[];
-  collab: { kind: LeadKind; title: string; text: string; on: boolean }[];
+  projects: { youtubeId: string; title: string; genre: ProjectGenre; channel: string; photo: string; on: boolean }[];
+  collab: { kind: LeadKind; title: string; text: string; photo: string; on: boolean }[];
   faq: { q: string; a: string; on: boolean }[];
   route: { text: string; on: boolean }[];
 };
@@ -79,22 +79,26 @@ export function defaultSite(): Site {
         title: "Стоимость",
         lede: `От ${prices.from} за ${prices.unit}. В час записи уже входят локация, камеры Sony FX30, RODE PodMic и свет Amaran. Монтаж и выезд считаются отдельно.`,
         note: "Цены в белорусских рублях. Если смена длиннее часа или гостей больше четырёх — напишите, посчитаем до съёмки, а не после.",
+        photo: "",
       },
       studio: {
         on: true,
         title: "О студии",
         lede: "Чернышевского 10а, кабинет 504. Комната заглушена, между дублями есть где сесть, чай уже стоит.",
         comfortTitle: "Между дублями",
+        photo: "",
       },
       projects: {
         on: true,
         title: "Проекты",
         lede: "Выпуски BYKA и ALTCOIN BUY. Нажмите на обложку — видео откроется прямо здесь.",
+        photo: "",
       },
       collab: {
         on: true,
         title: "Сотрудничество",
         lede: "Не только аренда часа. Пять форматов, заявка падает в тот же Telegram, что и бронь студии.",
+        photo: "",
       },
       contacts: {
         on: true,
@@ -103,6 +107,7 @@ export function defaultSite(): Site {
         writeTitle: "Написать",
         writeLede: "Партнёрство и вопросы",
         phoneNote: "Телефон и WhatsApp не публикуем, пока нет отдельного номера студии. Ответ идёт в Telegram.",
+        photo: "",
       },
     },
     home: {
@@ -111,6 +116,7 @@ export function defaultSite(): Site {
         title: "Студия записи подкастов\nи онлайн-трансляций",
         line: `${studio.city}, ${studio.address}, ${studio.room}`,
         button: "Забронировать",
+        photo: "",
       },
       rooms: {
         on: true,
@@ -153,10 +159,10 @@ export function defaultSite(): Site {
         rows: group.rows.map(([name, unit, price]) => ({ name, unit, price })),
       })),
     },
-    gear: gear.map((item) => ({ title: item.title, text: item.text, on: true })),
+    gear: gear.map((item) => ({ title: item.title, text: item.text, photo: "", on: true })),
     comfort: comfort.map((text) => ({ text, on: true })),
-    projects: projects.map((item) => ({ ...item, on: true })),
-    collab: collab.map((item) => ({ kind: item.kind, title: item.title, text: item.text, on: true })),
+    projects: projects.map((item) => ({ ...item, photo: "", on: true })),
+    collab: collab.map((item) => ({ kind: item.kind, title: item.title, text: item.text, photo: "", on: true })),
     faq: faq.map((item) => ({ ...item, on: true })),
     route: routeSteps.map((text) => ({ text, on: true })),
   };
@@ -186,16 +192,16 @@ export function normalizeSite(raw: unknown): Site {
     },
     studio: { ...fallback.studio, ...value.studio },
     nav: Array.isArray(value.nav) ? value.nav : fallback.nav,
-    locations: Array.isArray(value.locations) ? value.locations : fallback.locations,
+    locations: withPhoto(value.locations, fallback.locations),
     prices: {
       from: value.prices?.from ?? fallback.prices.from,
       unit: value.prices?.unit ?? fallback.prices.unit,
       groups: Array.isArray(value.prices?.groups) ? value.prices.groups : fallback.prices.groups,
     },
-    gear: Array.isArray(value.gear) ? value.gear : fallback.gear,
+    gear: withPhoto(value.gear, fallback.gear),
     comfort: Array.isArray(value.comfort) ? value.comfort : fallback.comfort,
-    projects: Array.isArray(value.projects) ? value.projects : fallback.projects,
-    collab: Array.isArray(value.collab) ? value.collab : fallback.collab,
+    projects: withPhoto(value.projects, fallback.projects),
+    collab: withPhoto(value.collab, fallback.collab),
     faq: Array.isArray(value.faq) ? value.faq : fallback.faq,
     route: Array.isArray(value.route) ? value.route : fallback.route,
   };
@@ -203,4 +209,9 @@ export function normalizeSite(raw: unknown): Site {
 
 export function live<T extends { on?: boolean }>(items: T[]) {
   return items.filter((item) => item.on !== false);
+}
+
+function withPhoto<T extends { photo?: string }>(items: T[] | undefined, fallback: T[]): T[] {
+  if (!Array.isArray(items)) return fallback;
+  return items.map((item) => ({ photo: "", ...item }));
 }

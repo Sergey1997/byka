@@ -12,7 +12,7 @@ export default async function StudioPage() {
 
   return (
     <main className="wrap page">
-      <PageHead title={site.pages.studio.title} lede={site.pages.studio.lede} />
+      <PageHead title={site.pages.studio.title} lede={site.pages.studio.lede} photo={site.pages.studio.photo} />
       <section className="section">
         <Points items={live(site.gear)} />
       </section>

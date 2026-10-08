@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookButton } from "@/components/book";
 import { PageHead } from "@/components/frame";
+import { Photo } from "@/components/photo";
 import { live } from "@/lib/site";
 import { getSite } from "@/lib/site-store";
 
@@ -13,12 +14,17 @@ export default async function CollabPage() {
 
   return (
     <main className="wrap page">
-      <PageHead title={site.pages.collab.title} lede={site.pages.collab.lede} />
+      <PageHead title={site.pages.collab.title} lede={site.pages.collab.lede} photo={site.pages.collab.photo} />
       <div className="deals">
         {live(site.collab).map((item, index) => (
           <article className="deal" key={`${item.kind}-${item.title}`}>
             <span>{String(index + 1).padStart(2, "0")}.</span>
             <div>
+              {item.photo ? (
+                <div className="deal-photo">
+                  <Photo src={item.photo} alt="" fill sizes="(max-width: 900px) 100vw, 40rem" />
+                </div>
+              ) : null}
               {item.title ? <h2>{item.title}</h2> : null}
               {item.text ? <p>{item.text}</p> : null}
             </div>

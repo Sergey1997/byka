@@ -10,7 +10,10 @@ const interval = 6000;
 
 export function Hero() {
   const site = useSite();
-  const slides = live(site.locations).filter((item) => item.photo);
+  const rooms = live(site.locations).filter((item) => item.photo);
+  const slides = site.home.hero.photo
+    ? [{ id: "hero", name: site.studio.name, photo: site.home.hero.photo }, ...rooms]
+    : rooms;
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {

@@ -12,7 +12,7 @@ export default async function ProjectsPage() {
 
   return (
     <main className="wrap page">
-      <PageHead title={site.pages.projects.title} lede={site.pages.projects.lede} />
+      <PageHead title={site.pages.projects.title} lede={site.pages.projects.lede} photo={site.pages.projects.photo} />
       <ProjectsBoard />
     </main>
   );

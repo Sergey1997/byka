@@ -86,26 +86,30 @@ export function parseLead(body: unknown): { lead: LeadInput } | { error: string 
       topic: clean(raw.topic, 120),
       message: clean(raw.message, 2000),
       page: clean(raw.page, 80),
-      company: clean(raw.company, 80),
+      company: clean(raw.company, 80) || clean(raw.hp_field, 80),
     },
   };
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 export function leadText(lead: LeadInput) {
   const place = locations.find((item) => item.id === lead.location)?.name || lead.location;
+  const slot = [lead.date, lead.time].filter(Boolean).join(" · ");
   const lines = [
-    `BYKA · ${leadKindLabel[lead.kind]}`,
-    `Имя: ${lead.name}`,
-    lead.phone ? `Телефон: ${lead.phone}` : "",
-    lead.telegram ? `Telegram: ${lead.telegram}` : "",
-    place ? `Локация: ${place}` : "",
-    lead.date ? `Дата: ${lead.date}` : "",
-    lead.time ? `Время: ${lead.time}` : "",
-    lead.topic ? `Тема: ${lead.topic}` : "",
-    lead.message ? `Сообщение: ${lead.message}` : "",
-    lead.page ? `Страница: ${lead.page}` : "",
+    `🎙 <b>BYKA · ${escapeHtml(leadKindLabel[lead.kind])}</b>`,
+    "",
+    `👤 <b>${escapeHtml(lead.name)}</b>`,
+    lead.phone ? `📞 ${escapeHtml(lead.phone)}` : "",
+    lead.telegram ? `💬 ${escapeHtml(lead.telegram)}` : "",
+    place ? `📍 ${escapeHtml(place)}` : "",
+    slot ? `🗓 ${escapeHtml(slot)}` : "",
+    lead.topic ? `📝 ${escapeHtml(lead.topic)}` : "",
+    lead.message ? `\n${escapeHtml(lead.message)}` : "",
   ];
-  return lines.filter(Boolean).join("\n");
+  return lines.filter((line) => line !== "").join("\n");
 }
 
 type Insert = (lead: LeadInput) => Promise<void>;
@@ -130,7 +134,7 @@ export async function deliverLead(
     return {
       ok: false,
       status: 503,
-      error: "Заявку сейчас некуда отправить. Напишите в Telegram @byka_kropka_by.",
+      error: "Не получилось отправить. Попробуйте ещё раз.",
     };
   }
 
@@ -141,7 +145,7 @@ const hits = new Map<string, number[]>();
 
 export function allowRequest(ip: string, now = Date.now()) {
   const recent = (hits.get(ip) ?? []).filter((stamp) => now - stamp < 60_000);
-  if (recent.length >= 5) {
+  if (recent.length >= 12) {
     hits.set(ip, recent);
     return false;
   }

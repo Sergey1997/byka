@@ -9,3 +9,5 @@ out
 data/site.json
 public/uploads/*
 !public/uploads/.gitkeep
+tsconfig.tsbuildinfo
+supabase/.temp

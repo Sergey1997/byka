@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LeadForm } from "@/components/book";
 import { ContactsBlock } from "@/components/contacts-block";
+import { PageHead } from "@/components/frame";
 import { live } from "@/lib/site";
 import { getSite } from "@/lib/site-store";
 
@@ -13,6 +14,7 @@ export default async function ContactsPage() {
 
   return (
     <main className="wrap page">
+      <PageHead photo={site.pages.contacts.photo} />
       <ContactsBlock studio={site.studio} title={site.pages.contacts.title} />
       <div className="contact-extra">
         {site.pages.contacts.writeTitle ? <h2>{site.pages.contacts.writeTitle}</h2> : null}
