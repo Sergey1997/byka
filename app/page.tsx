@@ -1,113 +1,72 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Availability } from "@/components/availability";
 import { BookButton } from "@/components/book";
-import { Showreel } from "@/components/showreel";
-import { locations, prices, projects, studio } from "@/lib/content";
+import { ContactsBlock } from "@/components/contacts-block";
+import { Points, PriceMenu, SectionTitle } from "@/components/frame";
+import { Hero } from "@/components/hero";
+import { Photo } from "@/components/photo";
+import { ProjectGrid } from "@/components/project-grid";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
-export default function HomePage() {
-  const titles = projects.map((item) => item.title).join("  ·  ");
+export default async function HomePage() {
+  const site = await getSite();
+  const rooms = live(site.locations);
+  const films = live(site.projects);
+  const about = live(site.gear);
+
   return (
     <main>
-      <section className="hero">
-        <div className="wrap hero-grid">
-          <div>
-            <p className="kicker">
-              <span>
-                <span className="rec">● rec</span> {studio.city}
-              </span>
-              <span>
-                {studio.address}, {studio.room}
-              </span>
-            </p>
-            <h1>Студия записи подкастов</h1>
-            <p className="lede">
-              Три локации в одном кабинете. Фронт и боковой план, звук, который не спорит с голосом, и свет, который не делает лицо пластиковым.
-            </p>
-            <div className="hero-actions">
-              <BookButton>Забронировать студию</BookButton>
-              <Link className="btn btn-ghost" href="/prices">
-                Смотреть прайс
-              </Link>
-            </div>
-            <dl className="facts">
-              <div>
-                <dt>Камеры</dt>
-                <dd>Sony FX30</dd>
-              </div>
-              <div>
-                <dt>Микрофоны</dt>
-                <dd>RODE PodMic</dd>
-              </div>
-              <div>
-                <dt>Свет</dt>
-                <dd>Amaran 300c</dd>
-              </div>
-            </dl>
+      {site.home.hero.on ? <Hero /> : null}
+      {site.home.rooms.on && rooms.length > 0 ? (
+        <section className="section wrap" id="locations">
+          <SectionTitle title={site.home.rooms.title} lede={site.home.rooms.lede} />
+          <div className="rooms">
+            {rooms.map((location) => (
+              <BookButton
+                key={location.id}
+                className="room"
+                draft={{ kind: "booking", location: location.id, topic: location.name }}
+              >
+                {location.photo ? (
+                  <Photo src={location.photo} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" />
+                ) : null}
+                <span className="room-name">
+                  {location.name}
+                  <span aria-hidden="true">›</span>
+                </span>
+                <span className="room-spec">
+                  {[location.guests, location.cameras].filter(Boolean).join(" · ")}
+                </span>
+              </BookButton>
+            ))}
           </div>
-          <aside className="hero-mark">
-            <Image
-              src="/logo.jpg"
-              alt="Знак BYKA: чёрный бык на жёлтом поле"
-              width={640}
-              height={640}
-              priority
-              className="hero-logo"
-            />
-            <p>
-              От {prices.from} / {prices.unit}. Канал {studio.line.toLowerCase()}.
-            </p>
-          </aside>
-        </div>
-      </section>
-      <div className="ticker" aria-hidden="true">
-        <div className="ticker-track">
-          {titles} · {titles} ·
-        </div>
-      </div>
-      <section className="sets" id="locations">
-        {locations.map((location) => (
-          <article className="set" key={location.id} id={location.id}>
-            <div className="set-copy">
-              <p className="index">Локация {location.index}</p>
-              <h2>{location.name}</h2>
-              <p className="lede">{location.text}</p>
-              <p className="set-spec">
-                {location.guests}
-                <span aria-hidden="true">·</span>
-                {location.cameras}
-              </p>
-              <div className="hero-actions">
-                <BookButton
-                  className="btn btn-solid"
-                  draft={{ kind: "booking", location: location.id, topic: location.name }}
-                >
-                  Этот сетап
-                </BookButton>
-              </div>
-            </div>
-            <div className="set-visual">
-              <Image
-                src={`/sets/${location.id}.jpg`}
-                alt={`Сетап «${location.name}»`}
-                width={1200}
-                height={900}
-                className="set-photo"
-              />
-            </div>
-          </article>
-        ))}
-      </section>
-      <section className="section ink">
-        <div className="wrap">
-          <Showreel />
-        </div>
-      </section>
-      <section className="section paper">
-        <div className="wrap">
-          <Availability />
-        </div>
-      </section>
+        </section>
+      ) : null}
+      {site.home.prices.on ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.prices.title} lede={site.home.prices.lede} />
+          <PriceMenu groups={site.prices.groups} />
+          <p className="more">
+            <BookButton className="btn btn-solid">Забронировать</BookButton>
+          </p>
+        </section>
+      ) : null}
+      {site.home.projects.on && films.length > 0 ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.projects.title} lede={site.home.projects.lede} />
+          <ProjectGrid items={films} />
+        </section>
+      ) : null}
+      {site.home.about.on && about.length > 0 ? (
+        <section className="section wrap">
+          <SectionTitle title={site.home.about.title} />
+          <Points items={about} />
+        </section>
+      ) : null}
+      {site.pages.contacts.on ? (
+        <section className="section wrap">
+          <ContactsBlock studio={site.studio} title={site.pages.contacts.title} />
+        </section>
+      ) : null}
     </main>
   );
 }

@@ -1,14 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
-import {
-  leadKindLabel,
-  locations,
-  slotTimes,
-  studio,
-  type LeadKind,
-  type LocationId,
-} from "@/lib/content";
+import { leadKindLabel, type LeadKind, type LocationId } from "@/lib/content";
+import { live } from "@/lib/site";
+import { useSite } from "./site";
 
 export type Draft = {
   kind?: LeadKind;
@@ -61,7 +56,7 @@ export function BookButton({
 }) {
   const { open } = useBook();
   return (
-    <button type="button" className={className ?? "btn btn-yellow"} onClick={() => open(draft)}>
+    <button type="button" className={className ?? "btn"} onClick={() => open(draft)}>
       {children}
     </button>
   );
@@ -96,49 +91,52 @@ function BookDialog() {
   );
 }
 
+async function postBook(payload: Record<string, string>) {
+  const response = await fetch("/api/book", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+  if (response.ok) return { ok: true as const };
+  return { ok: false as const, error: data.error };
+}
+
 export function LeadForm({ preset }: { preset: Draft }) {
+  const site = useSite();
+  const rooms = live(site.locations);
   const baseId = useId();
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const [done, setDone] = useState("");
+  const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const busy = useRef(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
-    setDone("");
+    if (busy.current) return;
+    busy.current = true;
+    setNote(null);
     setPending(true);
-    const form = new FormData(event.currentTarget);
-    const payload = {
-        ...Object.fromEntries(form.entries()),
-        page: window.location.pathname,
-      };
+    const node = event.currentTarget;
+    const payload = Object.fromEntries(new FormData(node).entries()) as Record<string, string>;
+    payload.page = window.location.pathname;
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = (await response.json()) as {
-        ok: boolean;
-        error?: string;
-        stored?: boolean;
-        telegram?: boolean;
-      };
-      if (!response.ok || !data.ok) {
-        setError(data.error || "Не отправилось.");
+      const data = await postBook(payload);
+      if (!data.ok) {
+        setNote({
+          ok: false,
+          text: data.error || "Не получилось отправить. Попробуйте ещё раз.",
+        });
         return;
       }
-      if (data.telegram && data.stored) {
-        setDone("Заявка в Telegram и в базе. Ответим туда же.");
-      } else if (data.telegram) {
-        setDone("Заявка ушла в Telegram. Ответим там.");
-      } else {
-        setDone("Заявку записали. Если ответа нет день — напишите в Telegram.");
-      }
-      event.currentTarget.reset();
+      setNote({ ok: true, text: "Заявка отправлена. Мы ответим вам сами." });
+      node.reset();
     } catch {
-      setError("Сеть не ответила. Напишите в Telegram.");
+      setNote({
+        ok: false,
+        text: "Не получилось отправить. Попробуйте ещё раз.",
+      });
     } finally {
+      busy.current = false;
       setPending(false);
     }
   }
@@ -147,8 +145,8 @@ export function LeadForm({ preset }: { preset: Draft }) {
     <form className="lead" onSubmit={onSubmit}>
       <input type="hidden" name="kind" value={preset.kind ?? "booking"} />
       <label className="hp">
-        Компания
-        <input name="company" tabIndex={-1} autoComplete="off" />
+        Сайт
+        <input name="hp_field" tabIndex={-1} autoComplete="off" />
       </label>
       <label>
         Имя
@@ -164,34 +162,17 @@ export function LeadForm({ preset }: { preset: Draft }) {
           <input name="telegram" placeholder="@username" maxLength={64} />
         </label>
       </div>
-      <div className="lead-row">
-        <label>
-          Локация
-          <select name="location" defaultValue={preset.location ?? ""}>
-            <option value="">Не выбрана</option>
-            {locations.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.index} {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Дата
-          <input type="date" name="date" defaultValue={preset.date ?? ""} />
-        </label>
-        <label>
-          Время
-          <select name="time" defaultValue={preset.time ?? ""}>
-            <option value="">Любое</option>
-            {slotTimes.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <label>
+        Локация
+        <select name="location" defaultValue={preset.location ?? ""}>
+          <option value="">Не выбрана</option>
+          {rooms.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
+      </label>
       <label>
         Тема
         <input name="topic" defaultValue={preset.topic ?? ""} maxLength={120} id={`${baseId}-topic`} />
@@ -200,34 +181,24 @@ export function LeadForm({ preset }: { preset: Draft }) {
         Сообщение
         <textarea name="message" rows={4} maxLength={2000} />
       </label>
-      <p className="fine">Телефон или Telegram — одно из двух обязательно. Слот подтверждаем ответом, календарь сам его не держит.</p>
-      {error ? (
-        <p className="form-error" role="alert">
-          {error}{" "}
-          <a href={studio.telegram}>Написать {studio.telegramHandle}</a>
+      <p className="fine">Телефон или Telegram — одно из двух обязательно.</p>
+      {note ? (
+        <p className={note.ok ? "form-ok" : "form-error"} role={note.ok ? "status" : "alert"}>
+          {note.text.split(site.studio.telegramHandle).map((part, index) =>
+            index === 0 ? (
+              part
+            ) : (
+              <span key={`${part}-${index}`}>
+                <a href={site.studio.telegram}>{site.studio.telegramHandle}</a>
+                {part}
+              </span>
+            ),
+          )}
         </p>
       ) : null}
-      {done ? <p className="form-ok">{done}</p> : null}
-      <button className="btn btn-black" type="submit" disabled={pending}>
+      <button className="btn btn-solid" type="submit" disabled={pending}>
         {pending ? "Отправляем" : "Отправить заявку"}
       </button>
     </form>
   );
-}
-
-export function MinskClock() {
-  const [value, setValue] = useState("");
-  useEffect(() => {
-    const format = () =>
-      new Intl.DateTimeFormat("ru-BY", {
-        timeZone: "Europe/Minsk",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(new Date());
-    setValue(format());
-    const id = window.setInterval(() => setValue(format()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-  return <span className="clock">{value || "––:––:––"}</span>;
 }

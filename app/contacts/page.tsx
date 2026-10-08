@@ -1,59 +1,32 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { LeadForm } from "@/components/book";
+import { ContactsBlock } from "@/components/contacts-block";
 import { PageHead } from "@/components/frame";
-import { faq, routeSteps, studio } from "@/lib/content";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "Контакты" };
 
-const map = `https://www.openstreetmap.org/export/embed.html?bbox=27.592%2C53.924%2C27.609%2C53.933&layer=mapnik&marker=${studio.lat}%2C${studio.lon}`;
-const yandex = `https://yandex.by/maps/?ll=${studio.lon}%2C${studio.lat}&z=17&pt=${studio.lon}%2C${studio.lat}`;
-const osm = `https://www.openstreetmap.org/?mlat=${studio.lat}&mlon=${studio.lon}#map=17/${studio.lat}/${studio.lon}`;
+export default async function ContactsPage() {
+  const site = await getSite();
+  if (!site.pages.contacts.on) notFound();
 
-export default function ContactsPage() {
   return (
-    <main className="wrap" style={{ paddingBottom: "3rem" }}>
-      <PageHead
-        index="06 · Контакты"
-        title="Кабинет 504"
-        lede={`${studio.city}, ${studio.address}. ${studio.district}. Центральный вход, пятый этаж.`}
-      />
-      <div className="contact-grid">
-        <div>
-          <div className="map-frame">
-            <iframe title="Карта: Чернышевского 10а" src={map} />
-          </div>
-          <p className="messengers">
-            <a className="btn btn-black" href={yandex}>
-              Яндекс Карты
-            </a>
-            <a className="btn" href={osm}>
-              OpenStreetMap
-            </a>
-          </p>
-          <ol className="route">
-            {routeSteps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-          <div className="messengers">
-            <a href={studio.telegram}>{studio.telegramHandle}</a>
-            <a href={studio.instagram}>Instagram bykamedia</a>
-            <a href={studio.youtube}>YouTube</a>
-          </div>
-          <p className="fine">Телефон и WhatsApp не публикуем, пока нет отдельного номера студии. Ответ идёт в Telegram.</p>
-        </div>
-        <div>
-          <p className="index">Партнёрство и вопросы</p>
-          <h2>Написать</h2>
-          <LeadForm preset={{ kind: "partnership" }} />
-          <div className="faq">
-            {faq.map((item) => (
-              <details key={item.q}>
-                <summary>{item.q}</summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </div>
+    <main className="wrap page">
+      <PageHead photo={site.pages.contacts.photo} />
+      <ContactsBlock studio={site.studio} title={site.pages.contacts.title} />
+      <div className="contact-extra">
+        {site.pages.contacts.writeTitle ? <h2>{site.pages.contacts.writeTitle}</h2> : null}
+        {site.pages.contacts.writeLede ? <p className="fine">{site.pages.contacts.writeLede}</p> : null}
+        <LeadForm preset={{ kind: "partnership" }} />
+        <div className="faq">
+          {live(site.faq).map((item) => (
+            <details key={item.q}>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
         </div>
       </div>
     </main>

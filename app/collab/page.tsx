@@ -1,29 +1,34 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { BookButton } from "@/components/book";
 import { PageHead } from "@/components/frame";
-import { collab } from "@/lib/content";
+import { Photo } from "@/components/photo";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "Сотрудничество" };
 
-export default function CollabPage() {
+export default async function CollabPage() {
+  const site = await getSite();
+  if (!site.pages.collab.on) notFound();
+
   return (
-    <main className="wrap" style={{ paddingBottom: "3rem" }}>
-      <PageHead
-        index="05 · Вместе"
-        title="Не только аренда часа"
-        lede="Пять форматов. Заявка падает в тот же Telegram, что и бронь студии."
-      />
+    <main className="wrap page">
+      <PageHead title={site.pages.collab.title} lede={site.pages.collab.lede} photo={site.pages.collab.photo} />
       <div className="deals">
-        {collab.map((item) => (
-          <article className="deal" key={item.kind}>
-            <p className="index">{item.index}</p>
+        {live(site.collab).map((item, index) => (
+          <article className="deal" key={`${item.kind}-${item.title}`}>
+            <span>{String(index + 1).padStart(2, "0")}.</span>
             <div>
-              <h2>{item.title}</h2>
-              <p>{item.text}</p>
+              {item.photo ? (
+                <div className="deal-photo">
+                  <Photo src={item.photo} alt="" fill sizes="(max-width: 900px) 100vw, 40rem" />
+                </div>
+              ) : null}
+              {item.title ? <h2>{item.title}</h2> : null}
+              {item.text ? <p>{item.text}</p> : null}
             </div>
-            <BookButton className="btn btn-black" draft={{ kind: item.kind, topic: item.title }}>
-              Обсудить
-            </BookButton>
+            <BookButton draft={{ kind: item.kind, topic: item.title }}>Обсудить</BookButton>
           </article>
         ))}
       </div>

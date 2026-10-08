@@ -1,42 +1,28 @@
 import type { Metadata } from "next";
-import { PageHead } from "@/components/frame";
-import { comfort, gear } from "@/lib/content";
+import { notFound } from "next/navigation";
+import { PageHead, Points, SectionTitle } from "@/components/frame";
+import { live } from "@/lib/site";
+import { getSite } from "@/lib/site-store";
 
 export const metadata: Metadata = { title: "О студии" };
 
-export default function StudioPage() {
+export default async function StudioPage() {
+  const site = await getSite();
+  if (!site.pages.studio.on) notFound();
+
   return (
-    <main>
-      <div className="wrap">
-        <PageHead
-          index="03 · Студия"
-          title="Кабинет, а не ангар"
-          lede="Чернышевского 10а, кабинет 504. Комната заглушена, между дублями есть где сесть, чай уже стоит."
-        />
-      </div>
-      <section className="section ink">
-        <div className="wrap gear">
-          {gear.map((item) => (
-            <article key={item.title}>
-              <p className="index">{item.kicker}</p>
-              <h2>{item.title}</h2>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
+    <main className="wrap page">
+      <PageHead title={site.pages.studio.title} lede={site.pages.studio.lede} photo={site.pages.studio.photo} />
+      <section className="section">
+        <Points items={live(site.gear)} />
       </section>
-      <section className="section paper">
-        <div className="wrap split">
-          <div>
-            <p className="index">Между дублями</p>
-            <h2>Как здесь сидится</h2>
-          </div>
-          <ul className="comfort">
-            {comfort.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
+      <section className="section">
+        <SectionTitle title={site.pages.studio.comfortTitle} />
+        <ul className="comfort">
+          {live(site.comfort).map((item) => (
+            <li key={item.text}>{item.text}</li>
+          ))}
+        </ul>
       </section>
     </main>
   );

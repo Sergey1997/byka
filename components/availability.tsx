@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { locations, type LocationId } from "@/lib/content";
+import { live } from "@/lib/site";
 import { useBook } from "./book";
+import { useSite } from "./site";
 
 type Slot = { time: string; free: boolean };
 
@@ -20,8 +21,10 @@ function minskDate(offsetDays: number) {
 }
 
 export function Availability() {
+  const site = useSite();
+  const rooms = live(site.locations);
   const { open } = useBook();
-  const [location, setLocation] = useState<LocationId>("razgovor");
+  const [location, setLocation] = useState(rooms[0]?.id ?? "");
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState<Slot[]>([]);
   const [source, setSource] = useState<"supabase" | "open" | "">("");
@@ -32,7 +35,7 @@ export function Availability() {
   }, []);
 
   useEffect(() => {
-    if (!date) return;
+    if (!date || !location) return;
     const controller = new AbortController();
     setError("");
     fetch(`/api/availability?location=${location}&date=${date}`, { signal: controller.signal })
@@ -61,10 +64,8 @@ export function Availability() {
     <section className="availability" id="slots">
       <div className="availability-copy">
         <p className="index">Календарь</p>
-        <h2>Свободный час</h2>
-        <p>
-          Жёлтые слоты ещё не закрыты. Нажатие не бронирует кабинет — открывает заявку, её подтверждаем в Telegram.
-        </p>
+        {site.home.calendar.title ? <h2>{site.home.calendar.title}</h2> : null}
+        {site.home.calendar.text ? <p>{site.home.calendar.text}</p> : null}
         <p className="fine">
           {source === "supabase"
             ? "Занятые часы читаем из базы."
@@ -75,8 +76,8 @@ export function Availability() {
         <div className="lead-row">
           <label>
             Локация
-            <select value={location} onChange={(event) => setLocation(event.target.value as LocationId)}>
-              {locations.map((item) => (
+            <select value={location} onChange={(event) => setLocation(event.target.value)}>
+              {rooms.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.name}
                 </option>
@@ -102,7 +103,7 @@ export function Availability() {
                   location,
                   date,
                   time: slot.time,
-                  topic: locations.find((item) => item.id === location)?.name,
+                  topic: rooms.find((item) => item.id === location)?.name,
                 })
               }
             >
